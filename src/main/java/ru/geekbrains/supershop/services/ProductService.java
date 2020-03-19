@@ -28,4 +28,8 @@ public class ProductService {
         return category == null ? productRepository.findAll() : productRepository.findAllByCategory(ProductCategory.values()[category]);
     }
 
+    public List<Product> findByAvailability(Boolean available) {
+        return available == null ? productRepository.findAll() : productRepository.findAllByAvailable(available);
+    }
+
 }

@@ -21,25 +21,28 @@
                     <th>Описание</th>
                     <th>Цена</th>
                     <th>Дата добавления</th>
+                    <th>Наличие</th>
                 </tr>
                 </thead>
                 <tbody>
                     <tr th:each="product, iterator : ${products}">
                         <!--/*@thymesVar id="product" type="ru.geekbrains.supershop.persistence.entities.Product"*/-->
-                        <span th:if="${product.available}">
-                            <td th:text="${iterator.index + 1}"/>
-                            <td>
-                                <a th:href="@{'/products/' + ${product.id}}">[[ ${product.title} ]]</a>
-                            </td>
-                            <td>
-                                <div th:each="image: ${product.images}">
-                                    <img th:src="@{'/products/images/' + ${image.name}}" alt="" width="50px" height="50px" />
-                                </div>
-                            </td>
-                            <td th:text="${product.description}"/>
-                            <td th:text="${product.price}"/>
-                            <td th:text="${#dates.format(product.added, 'dd-MM-yyyy')}"/>
-                        </span>
+                        <td th:text="${iterator.index + 1}"/>
+                        <td>
+                            <a th:href="@{'/products/' + ${product.id}}">[[ ${product.title} ]]</a>
+                        </td>
+                        <td>
+                            <div th:each="image: ${product.images}">
+                                <img th:src="@{'/products/images/' + ${image.name}}" alt="" width="50px" height="50px" />
+                            </div>
+                        </td>
+                        <td th:text="${product.description}"/>
+                        <td th:text="${product.price}"/>
+                        <td th:text="${#dates.format(product.added, 'dd-MM-yyyy')}"/>
+                        <td th:switch="${product.available}">
+                            <p class="alert alert-success" th:case="true"> Есть в наличии </p>
+                            <p class="alert alert-danger" th:case="false"> Нет в наличии </p>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -52,6 +55,14 @@
                             th:value="${category.ordinal()}"
                             th:text="${category.name}"
                     />
+                </select>
+                <button type="submit">применить</button>
+            </form>
+            <form th:action="@{/available}" method="get">
+                <select name="available">
+                    <option th:text="'Не выбрано'" th:value="null"/>
+                    <option th:value="true">Есть в наличии</option>
+                    <option th:value="false">Нет в наличии</option>
                 </select>
                 <button type="submit">применить</button>
             </form>
