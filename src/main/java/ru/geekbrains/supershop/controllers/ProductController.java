@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
+import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.services.ImageService;
 import ru.geekbrains.supershop.services.ProductService;
+import ru.geekbrains.supershop.utilities.UUIDValidator;
 
 import javax.imageio.ImageIO;
 
@@ -29,14 +31,17 @@ public class ProductController {
 
     private final ImageService imageService;
     private final ProductService productService;
+    private final UUIDValidator validator;
 
     @GetMapping("/{id}")
     public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException {
-
-        // TODO ДЗ - утилита, которая будет проверять UUID
-
-        model.addAttribute("product", productService.findOneById(UUID.fromString(id)));
-        return "product";
+        if (validator.validate(id)) {
+            Product product = productService.findOneById(UUID.fromString(id));
+            model.addAttribute("product", product);
+            return "product";
+        } else {
+            throw new RuntimeException();
+        }
     }
 
     @GetMapping(value = "/images/{name}", produces = MediaType.IMAGE_PNG_VALUE)

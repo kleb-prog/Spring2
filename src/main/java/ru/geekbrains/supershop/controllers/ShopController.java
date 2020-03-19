@@ -16,21 +16,17 @@ import ru.geekbrains.supershop.services.ProductService;
 public class ShopController {
 
     private final ProductService productService;
-    private final ImageService imageService;
 //это не JSON
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index(Model model, @RequestParam(required = false) Integer category) {
-
-        //TODO сделать фильтр, который будет выводить фильтровать продукты по доступности. Выводить все продукты, но при этом указывать какие из них в наличие, а какие нет.
 
         model.addAttribute("products", productService.findAll(category));
         return "index";
     }
 
-    @GetMapping(value = "/images")
-    public String index(Model model) {
-        model.addAttribute("images", imageService.findImages());
+    @GetMapping(value = "/available", produces = MediaType.TEXT_HTML_VALUE)
+    public String indexAvailable(Model model, @RequestParam(required = false) Boolean available) {
+        model.addAttribute("products", productService.findByAvailability(available));
         return "index";
     }
-
 }

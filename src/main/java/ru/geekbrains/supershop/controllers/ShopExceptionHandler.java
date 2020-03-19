@@ -14,12 +14,17 @@ import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
 @ControllerAdvice
 public class ShopExceptionHandler {
 
-    // TODO ДЗ - оформить страницу ошибки 404
-
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ProductNotFoundException.class)
     public String handleProductNotFoundException(final ProductNotFoundException ex) {
         log.error("Product not found thrown", ex);
+        return "error";
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public String handlerInternalServerError(final Exception e) {
+        log.error("Error on server", e);
         return "error";
     }
 
