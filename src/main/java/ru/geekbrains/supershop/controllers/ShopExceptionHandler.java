@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import ru.geekbrains.supershop.exceptions.InternalServerException;
 import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
 
 @Slf4j
@@ -22,8 +23,8 @@ public class ShopExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    public String handlerInternalServerError(final Exception e) {
+    @ExceptionHandler(InternalServerException.class)
+    public String handlerInternalServerError(final InternalServerException e) {
         log.error("Error on server", e);
         return "error";
     }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ru.geekbrains.supershop.exceptions.InternalServerException;
 import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
 import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.services.ImageService;
@@ -34,13 +35,13 @@ public class ProductController {
     private final UUIDValidator validator;
 
     @GetMapping("/{id}")
-    public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException {
+    public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException, InternalServerException {
         if (validator.validate(id)) {
             Product product = productService.findOneById(UUID.fromString(id));
             model.addAttribute("product", product);
             return "product";
         } else {
-            throw new RuntimeException();
+            throw new InternalServerException("UUID not valid");
         }
     }
 

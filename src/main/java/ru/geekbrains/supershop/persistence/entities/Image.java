@@ -16,7 +16,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class Image extends PersistableEntity implements Serializable {
 
-    private static final long UUID = 1L;
+    private static final long SUID = 1L;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_image", referencedColumnName = "image")
