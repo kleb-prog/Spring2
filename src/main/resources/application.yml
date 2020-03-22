@@ -13,3 +13,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
   thymeleaf:
     cache: false
+    
+files:
+  storepath:
+    icons:  "C:\\Users\\KirillPC\\Documents\\shop\\storepath\\icons"
+    images: "C:\\Users\\KirillPC\\Documents\\shop\\storepath\\images"
