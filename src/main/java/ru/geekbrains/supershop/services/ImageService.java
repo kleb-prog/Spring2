@@ -105,7 +105,6 @@ public class ImageService {
 
     @Transactional
     public Image uploadImage(MultipartFile image, String imageName, Product product) throws IOException {
-//        String uploadedFileName = imageName;
         Path targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         while (Files.exists(targetLocation)) {
             String extension = imageName.split("\\.")[1];

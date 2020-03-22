@@ -22,7 +22,7 @@ public class ShopController {
     private final Cart cart;
     private final ProductService productService;
     private final ShopuserService shopuserService;
-//это не JSON
+
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index(Model model, @RequestParam(required = false) Integer category) {
 		model.addAttribute("cart", cart.getCartRecords());
