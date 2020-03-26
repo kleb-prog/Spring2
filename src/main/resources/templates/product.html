@@ -33,7 +33,11 @@
                     <td th:text="${iterator.index + 1}"></td>
                     <td th:switch="${review.approved}">
                         <div th:case="true"> [[ ${review.commentary} ]] </div>
-                        <div th:case="false"> Комментарий проверяется модератором </div>
+                        <div th:case="false">
+                            <div sec:authorize="hasRole('ADMIN')"> [[ ${review.commentary} ]] </div>
+                            <div sec:authorize="hasRole('CUSTOMER')"> Комментарий проверяется модератором </div>
+                            <div sec:authorize="isAnonymous()"> Комментарий проверяется модератором </div>
+                        </div>
                     </td>
                     <td>
                         <a th:href="@{'/products/' + ${review.shopuser.id}}">[[ ${review.shopuser.firstName} ]]</a>
