@@ -1,11 +1,13 @@
 package ru.geekbrains.supershop.utilities;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 public class ImageValidator {
 
     public static boolean validate(MultipartFile image) {
-        String type = image.getContentType();
-        return image.getContentType().equals("image/jpeg") || image.getContentType().equals("image/png");
+        return Objects.equals(image.getContentType(), MediaType.IMAGE_JPEG_VALUE) || Objects.equals(image.getContentType(), MediaType.IMAGE_PNG_VALUE);
     }
 }

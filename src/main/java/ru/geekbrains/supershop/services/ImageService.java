@@ -108,7 +108,7 @@ public class ImageService {
         Path targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         while (Files.exists(targetLocation)) {
             String extension = imageName.split("\\.")[1];
-            imageName = RandomStringUtils.randomAlphabetic(6) + "." + extension;
+            imageName = RandomStringUtils.randomAlphabetic(6) + "." + image.getContentType();
             targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         }
         Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
