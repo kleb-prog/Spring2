@@ -3,7 +3,6 @@ package ru.geekbrains.supershop.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -108,7 +107,7 @@ public class ImageService {
         Path targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         while (Files.exists(targetLocation)) {
             String extension = imageName.split("\\.")[1];
-            imageName = RandomStringUtils.randomAlphabetic(6) + "." + image.getContentType();
+            imageName = UUID.randomUUID() + "." + image.getContentType();
             targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         }
         Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);

@@ -9,11 +9,21 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.bind.annotation.ResponseBody;
 import ru.geekbrains.supershop.beans.Cart;
+import ru.geekbrains.supershop.persistence.entities.Shopuser;
 import ru.geekbrains.supershop.services.ProductService;
+import ru.geekbrains.supershop.services.ReviewService;
 import ru.geekbrains.supershop.services.ShopuserService;
+import ru.geekbrains.supershop.utils.CaptchaGenerator;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +32,7 @@ public class ShopController {
     private final Cart cart;
     private final ProductService productService;
     private final ShopuserService shopuserService;
+    private final CaptchaGenerator captchaGenerator;
 
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index(Model model, @RequestParam(required = false) Integer category) {
@@ -66,5 +77,18 @@ public class ShopController {
         }
 
         return "profile";
+    }
+	
+	@GetMapping(value = "/captcha", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody byte[] captcha(HttpSession session) {
+        try {
+            BufferedImage img = captchaGenerator.getCaptchaImage();
+            session.setAttribute("captchaCode", captchaGenerator.getCaptchaString());
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            ImageIO.write(img, "png", bao);
+            return bao.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
