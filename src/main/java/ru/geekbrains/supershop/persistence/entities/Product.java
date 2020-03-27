@@ -42,5 +42,7 @@ public class Product extends PersistableEntity implements Serializable{
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "image")
     private List<Image> images;
-
+	
+	@OneToMany(mappedBy = "product")
+    private List<Review> reviews;
 }
