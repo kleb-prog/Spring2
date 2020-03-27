@@ -21,6 +21,7 @@
                 <tr>
                     <th>#</th>
                     <th>Текст отзыва</th>
+                    <th>Картинка</th>
                     <th>Пользователь</th>
 					<th>
 						<div sec:authorize="hasRole('ADMIN')"> Проверка </div>
@@ -37,6 +38,11 @@
                             <div sec:authorize="hasRole('ADMIN')"> [[ ${review.commentary} ]] </div>
                             <div sec:authorize="hasRole('CUSTOMER')"> Комментарий проверяется модератором </div>
                             <div sec:authorize="isAnonymous()"> Комментарий проверяется модератором </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <img th:src="@{'/products/revImages/' + ${review.id}}" alt="" width="50px" height="50px" />
                         </div>
                     </td>
                     <td>
@@ -58,7 +64,7 @@
         </div>
         <hr>
         <div class="container" style="text-align: center" sec:authorize="isAuthenticated()">
-            <form action="#" th:action="@{/products/reviews}" method="POST">
+            <form action="#" th:action="@{/products/reviews}" method="POST" enctype="multipart/form-data">
                 <div class="form-row row justify-content-center">
                     <div class="form-group col-md-9">
                         <textarea class="form-control" name="commentary" rows="5" style="resize: none;" placeholder="Введите ваш отзыв"></textarea>
@@ -71,6 +77,9 @@
                     </div>
                     <div class="form-group col-md-3">
                         <img class="captcha-pic" id="captcha" th:src="@{/captcha}" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <input type="file" class="form-control" name="image"/>
                     </div>
                     <div class="form-group col-md-3">
                         <button type="submit" class="btn btn-success">оставить отзыв</button>
