@@ -9,7 +9,61 @@
     </head>
     <body>
         <div class="container">
-            <h1>Product [[ ${product.title} ]]</h1>
+            <div class="row">
+                <div class="col" th:each="image: ${product.images}">
+                    <img th:src="@{'/products/images/' + ${image.name}}" alt="Image" class="img-thumbnail" width="100px" height="100px">
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col table table-bordered">
+                    Наименование
+                </div>
+                <div class="col table table-bordered">
+                    [[${product.title}]]
+                </div>
+            </div>
+            <div class="row">
+                <div class="col table table-bordered">
+                    Описание
+                </div>
+                <div class="col table table-bordered">
+                    [[${product.description}]]
+                </div>
+            </div>
+            <div class="row">
+                <div class="col table table-bordered">
+                    Дата добавления
+                </div>
+                <div class="col table table-bordered">
+                    [[${product.added} ]]
+                </div>
+            </div>
+            <div class="row">
+                <div class="col table table-bordered">
+                    Цена
+                </div>
+                <div class="col table table-bordered">
+                    [[${product.price} ]]
+                </div>
+            </div>
+            <div class="row">
+                <div class="col table table-bordered">
+                    Наличие
+                </div>
+                <div class="col table table-bordered" th:switch="${product.available}">
+                    <p class="alert alert-success" th:case="true"> Есть в наличии </p>
+                    <p class="alert alert-danger" th:case="false"> Нет в наличии </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm table table-bordered">
+                    Категория товара
+                </div>
+                <div class="col table table-bordered">
+                    [[${product.category} ]]
+                </div>
+            </div>
         </div>
     </body>
 </html>

@@ -8,18 +8,27 @@ import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import ru.geekbrains.supershop.exceptions.InternalServerException;
 import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
+import ru.geekbrains.supershop.persistence.entities.Image;
+import ru.geekbrains.supershop.persistence.entities.Product;
+import ru.geekbrains.supershop.persistence.pojo.ProductPojo;
 import ru.geekbrains.supershop.services.ImageService;
 import ru.geekbrains.supershop.services.ProductService;
+import ru.geekbrains.supershop.utilities.ImageValidator;
+import ru.geekbrains.supershop.utilities.UUIDValidator;
 
 import javax.imageio.ImageIO;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.util.UUID;
 
 @Controller
@@ -29,14 +38,17 @@ public class ProductController {
 
     private final ImageService imageService;
     private final ProductService productService;
+    private final UUIDValidator validator;
 
     @GetMapping("/{id}")
-    public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException {
-
-        // TODO ДЗ - утилита, которая будет проверять UUID
-
-        model.addAttribute("product", productService.findOneById(UUID.fromString(id)));
-        return "product";
+    public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException, InternalServerException {
+        if (validator.validate(id)) {
+            Product product = productService.findOneById(UUID.fromString(id));
+            model.addAttribute("product", product);
+            return "product";
+        } else {
+            throw new InternalServerException("UUID not valid");
+        }
     }
 
     @GetMapping(value = "/images/{name}", produces = MediaType.IMAGE_PNG_VALUE)
@@ -49,6 +61,19 @@ public class ProductController {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+    }
+	
+	@PostMapping
+    public String addOne(@RequestParam("image") MultipartFile[] images, ProductPojo productPojo) throws IOException {
+        UUID imageId = UUID.randomUUID();
+        Product product = productService.save(productPojo, imageId);
+        for (MultipartFile image : images) {
+            if (!ImageValidator.validate(image)) {
+                continue;
+            }
+            imageService.uploadImage(image, image.getOriginalFilename(), product);
+        }
+        return "redirect:/";
     }
 
 }
