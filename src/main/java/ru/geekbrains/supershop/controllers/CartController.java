@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import ru.geekbrains.paymentservice.Payment;
 import ru.geekbrains.supershop.beans.Cart;
 import ru.geekbrains.supershop.services.ProductService;
+import ru.geekbrains.supershop.services.soap.PaymentService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -23,6 +26,7 @@ public class CartController {
 
     private final Cart cart;
     private final ProductService productService;
+    private final PaymentService paymentService;
 
     @GetMapping("/add/{id}")
     public void addProductToCart(@PathVariable UUID id, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -38,7 +42,9 @@ public class CartController {
 
     @GetMapping
     public String showCart(Model model) {
+        List<Payment> payments = paymentService.getPayment("USA");
         model.addAttribute("cart", cart);
+        model.addAttribute("payments", payments);
         return "cart";
     }
 
