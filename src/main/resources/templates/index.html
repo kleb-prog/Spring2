@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      lang="EN">
     <head>
         <meta charset="utf-8"/>
         <title>SuperShop</title>
@@ -11,7 +12,41 @@
             <div style="text-align: center;">
                 <h1>Super Shop</h1>
             </div>
+			
+			<hr>
 
+            <div class="container" sec:authorize="isAuthenticated()">
+                <div class="row">
+                    <div class="col-sm">
+                        <a class="nav-link" th:href="@{/profile}" th:text="Profile">PROFILE</a>
+                    </div>
+                    <div class="col-sm">
+                        <form th:action="@{/logout}" method="POST" class="form-inline">
+                            <button id="navLogout" class="btn btn-outline-secondary" type="submit"  th:text="logout"></button>
+                        </form>
+                    </div>
+                    <div class="col-sm">
+                        <a class="nav-link" th:href="@{/cart}" th:text="CART + '(' + ${cart.size() + ')'}">CART</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" sec:authorize="isAnonymous()">
+                <form th:action="@{/authenticateTheUser}" method="POST" class="form-inline">
+                    <div class="row" style="margin-left: auto;margin-right: auto;">
+                        <div class="col-sm">
+                            <input type="text" name="username" placeholder="username" class="form-control">
+                        </div>
+                        <div class="col-sm">
+                            <input type="password" name="password" placeholder="password" class="form-control">
+                        </div>
+                        <div class="col-sm">
+                            <button type="submit" class="btn btn-success">вход</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <br>
             <table class="table table-hover">
                 <thead class="thead-dark">
                 <tr>
@@ -21,25 +56,40 @@
                     <th>Описание</th>
                     <th>Цена</th>
                     <th>Дата добавления</th>
+                    <th>Наличие</th>
+                    <th>
+                        <div sec:authorize="isAuthenticated()">
+                            Купить
+                        </div>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
                     <tr th:each="product, iterator : ${products}">
                         <!--/*@thymesVar id="product" type="ru.geekbrains.supershop.persistence.entities.Product"*/-->
-                        <span th:if="${product.available}">
-                            <td th:text="${iterator.index + 1}"/>
-                            <td>
-                                <a th:href="@{'/products/' + ${product.id}}">[[ ${product.title} ]]</a>
-                            </td>
-                            <td>
-                                <div th:each="image: ${product.images}">
-                                    <img th:src="@{'/products/images/' + ${image.name}}" alt="" width="50px" height="50px" />
-                                </div>
-                            </td>
-                            <td th:text="${product.description}"/>
-                            <td th:text="${product.price}"/>
-                            <td th:text="${#dates.format(product.added, 'dd-MM-yyyy')}"/>
-                        </span>
+                        <td th:text="${iterator.index + 1}"/>
+                        <td>
+                            <a th:href="@{'/products/' + ${product.id}}">[[ ${product.title} ]]</a>
+                        </td>
+                        <td>
+                            <div th:each="image: ${product.images}">
+                                <img th:src="@{'/products/images/' + ${image.name}}" alt="" width="50px" height="50px" />
+                            </div>
+                        </td>
+                        <td th:text="${product.description}"/>
+                        <td th:text="${product.price}"/>
+                        <td th:text="${#dates.format(product.added, 'dd-MM-yyyy')}"/>
+                        <td th:switch="${product.available}">
+                            <p class="alert alert-success" th:case="true"> Есть в наличии </p>
+                            <p class="alert alert-danger" th:case="false"> Нет в наличии </p>
+                        </td>
+                        <td>
+                            <div sec:authorize="isAuthenticated()">
+                                <a th:href="@{'/cart/add/' + ${product.id}}">
+                                    <img th:src="@{'/products/images/cart.png'}" alt="" width="30px" height="30px" />
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -55,6 +105,18 @@
                 </select>
                 <button type="submit">применить</button>
             </form>
+            Наличие:
+            <form th:action="@{/available}" method="get">
+                <select name="available">
+                    <option th:text="'Не выбрано'" th:value="null"/>
+                    <option th:value="true">Есть в наличии</option>
+                    <option th:value="false">Нет в наличии</option>
+                </select>
+                <button type="submit">применить</button>
+            </form>
+            <div class="col-sm">
+                <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:href="@{/admin}" th:text="admin">ADMIN</a>
+            </div>
         </div>
     </body>
 </html>

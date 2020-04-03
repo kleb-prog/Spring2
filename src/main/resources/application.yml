@@ -3,6 +3,11 @@ server:
     context-path: /supershop
 
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
   datasource:
     url: jdbc:postgresql://localhost:5432/onlineshop?useUnicode=true&characterEncoding=utf8
     driver-class-name: org.postgresql.Driver
@@ -13,3 +18,14 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
   thymeleaf:
     cache: false
+    
+files:
+  storepath:
+    icons:  "C:\\Users\\KirillPC\\Documents\\shop\\storepath\\icons"
+    images: "C:\\Users\\KirillPC\\Documents\\shop\\storepath\\images"
+
+supershop:
+  rabbitmq:
+    exchange:   super-shop.exchange
+    routingkey: super.shop
+    queue:      super-shop.queue
