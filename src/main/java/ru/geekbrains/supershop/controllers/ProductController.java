@@ -1,7 +1,10 @@
 package ru.geekbrains.supershop.controllers;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,8 +43,10 @@ import java.util.UUID;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/products")
+@Api("Набор методов для витрины онлайн-магазина.")
 public class ProductController {
 
+    private final AmqpTemplate amqpTemplate;
     private final ImageService imageService;
     private final ProductService productService;
     private final ShopuserService shopuserService;
@@ -49,6 +54,7 @@ public class ProductController {
     private final UUIDValidator validator;
     private final ReviewImageService reviewImageService;
 
+    @ApiOperation(value = "Получить страницу с данными продукта.", response = String.class)
     @GetMapping("/{id}")
     public String getOneProduct(Model model, @PathVariable String id) throws ProductNotFoundException, InternalServerException {
         if (validator.validate(id)) {
@@ -62,6 +68,7 @@ public class ProductController {
         }
     }
 
+    @ApiOperation(value = "Загрузка изображения.", response = String.class)
     @GetMapping(value = "/images/{name}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody
     byte[] getImageByName(@PathVariable String name) {
@@ -122,11 +129,16 @@ public class ProductController {
         Product product = productService.findOneById(reviewPojo.getProductId());
         Shopuser shopuser = shopuserService.findByPhone(principal.getName());
         ReviewImage reviewImage;
-        try {
-            reviewImage = reviewImageService.uploadImage(image, image.getOriginalFilename());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (!image.isEmpty()) {
+            try {
+                reviewImage = reviewImageService.uploadImage(image, image.getOriginalFilename());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            reviewImage = null;
         }
+
 
         Review review = Review.builder()
                 .commentary(reviewPojo.getCommentary())
@@ -135,6 +147,8 @@ public class ProductController {
                 .approved(shopuser.getRole().equals(Role.ROLE_ADMIN))
                 .reviewImage(reviewImage)
                 .build();
+
+        amqpTemplate.convertAndSend("super-shop.exchange", "super.shop", "Test_MSG");
 
         reviewService.save(review);
 

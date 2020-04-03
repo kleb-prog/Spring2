@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ru.geekbrains.paymentservice.Payment;
 import ru.geekbrains.supershop.beans.Cart;
+import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.services.ProductService;
 import ru.geekbrains.supershop.services.soap.PaymentService;
 
@@ -30,7 +31,8 @@ public class CartController {
 
     @GetMapping("/add/{id}")
     public void addProductToCart(@PathVariable UUID id, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        cart.add(productService.findOneById(id));
+        Product product = productService.findOneById(id);
+        cart.add(product);
         response.sendRedirect(request.getHeader("referer"));
     }
 
@@ -42,9 +44,7 @@ public class CartController {
 
     @GetMapping
     public String showCart(Model model) {
-        List<Payment> payments = paymentService.getPayment("USA");
         model.addAttribute("cart", cart);
-        model.addAttribute("payments", payments);
         return "cart";
     }
 

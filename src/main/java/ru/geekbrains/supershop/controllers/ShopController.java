@@ -5,16 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.ResponseBody;
+import ru.geekbrains.paymentservice.Payment;
 import ru.geekbrains.supershop.beans.Cart;
 import ru.geekbrains.supershop.persistence.entities.Shopuser;
 import ru.geekbrains.supershop.services.ProductService;
 import ru.geekbrains.supershop.services.ReviewService;
 import ru.geekbrains.supershop.services.ShopuserService;
+import ru.geekbrains.supershop.utilities.Validators;
 import ru.geekbrains.supershop.utils.CaptchaGenerator;
 
 import javax.imageio.ImageIO;
@@ -90,5 +89,21 @@ public class ShopController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/checkout")
+    public String proceedToCheckout(String paymentId, Model model) {
+
+        Payment payment = cart.getPayments()
+                .stream()
+                .filter(p -> p.getId() == Integer.valueOf(paymentId))
+                .collect(Validators.toSingleton());
+
+        cart.setPayment(payment);
+
+        model.addAttribute("cart", cart);
+
+        return "checkout";
+
     }
 }
