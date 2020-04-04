@@ -1,22 +1,25 @@
 package ru.geekbrains.supershop.persistence.entities;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
-import lombok.ToString;
 import ru.geekbrains.supershop.persistence.entities.utils.PersistableEntity;
 
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Data
 @Entity
-@ToString(exclude = {"product"})
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Image extends PersistableEntity implements Serializable {
 
-    private static final long UUID = 1L;
+    private static final long SUID = 1L;
+
+    @Column(name = "id_image", insertable = false, updatable = false)
+    private UUID idImage;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_image", referencedColumnName = "image")

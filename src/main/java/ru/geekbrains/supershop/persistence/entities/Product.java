@@ -39,8 +39,8 @@ public class Product extends PersistableEntity implements Serializable{
 
     private UUID image;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "image")
+//    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+////    @JoinColumn(name = "image")
+    @Transient
     private List<Image> images;
-
 }
