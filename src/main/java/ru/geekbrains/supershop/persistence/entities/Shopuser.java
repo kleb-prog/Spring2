@@ -30,10 +30,4 @@ public class Shopuser extends PersistableEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @OneToMany(mappedBy = "shopuser")
-    private List<Purchase> purchases;
-	
-	@OneToMany(mappedBy = "shopuser")
-    private List<Review> reviews;
 }

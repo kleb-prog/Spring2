@@ -10,6 +10,10 @@ import ru.geekbrains.supershop.persistence.entities.Review;
 import ru.geekbrains.supershop.persistence.entities.Shopuser;
 import ru.geekbrains.supershop.persistence.repositories.ReviewRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +21,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final ReviewRepository reviewRepository;
 
@@ -35,6 +42,23 @@ public class ReviewService {
     @Transactional
     public void save(Review review) {
         reviewRepository.save(review);
+    }
+
+    public List<Review> getReviewsByPhone(String phone) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Review> criteriaQuery = criteriaBuilder.createQuery(Review.class);
+
+        Root<Review> root = criteriaQuery.from(Review.class);
+        Join<Review, Shopuser> reviewShopuserJoin = root.join("shopuser");
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaBuilder.equal(reviewShopuserJoin.get("phone"), phone));
+
+        criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[]{})));
+
+        List<Review> reviews = entityManager.createQuery(criteriaQuery).getResultList();
+        return reviews;
     }
 
 }

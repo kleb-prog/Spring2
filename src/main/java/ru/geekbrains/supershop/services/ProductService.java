@@ -7,12 +7,18 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
-import ru.geekbrains.supershop.persistence.entities.Image;
 import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.persistence.entities.enums.ProductCategory;
 import ru.geekbrains.supershop.persistence.pojo.ProductPojo;
 import ru.geekbrains.supershop.persistence.repositories.ProductRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,16 +28,35 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final ProductRepository productRepository;
 
     public Product findOneById(UUID uuid) throws ProductNotFoundException {
         return productRepository.findById(uuid).orElseThrow(
-            () -> new ProductNotFoundException("Oops! Product " + uuid + " wasn't found!")
+                () -> new ProductNotFoundException("Oops! Product " + uuid + " wasn't found!")
         );
     }
 
     public List<Product> findAll(Integer category) {
-        return category == null ? productRepository.findAll() : productRepository.findAllByCategory(ProductCategory.values()[category]);
+//        return category == null ? productRepository.findAll() : productRepository.findAllByCategory(ProductCategory.values()[category]);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
+
+        Root<Product> root = criteriaQuery.from(Product.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        if (category != null) {
+            predicates.add(criteriaBuilder.equal(root.get("category"), category));
+            criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[]{})));
+            return entityManager.createQuery(criteriaQuery).getResultList();
+        } else {
+            CriteriaQuery<Product> all = criteriaQuery.select(root);
+            return entityManager.createQuery(all).getResultList();
+        }
     }
 
     public List<Product> findByAvailability(Boolean available) {

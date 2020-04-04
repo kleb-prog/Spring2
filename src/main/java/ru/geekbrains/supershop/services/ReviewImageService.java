@@ -71,7 +71,8 @@ public class ReviewImageService {
     public ReviewImage uploadImage(MultipartFile image, String imageName) throws IOException {
         Path targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         while (Files.exists(targetLocation)) {
-            imageName = UUID.randomUUID() + "." + image.getContentType();
+            String ext = image.getContentType().split("/")[1];
+            imageName = UUID.randomUUID() + "." + ext;
             targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         }
         Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
