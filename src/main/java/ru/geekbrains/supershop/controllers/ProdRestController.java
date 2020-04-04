@@ -23,13 +23,13 @@ public class ProdRestController {
     @ApiOperation(value = "Получить список всех продуктов.", response = String.class)
     @RequestMapping(method = RequestMethod.GET)
     public List<Product> getProductsList() {
-        return productService.findAll(null);
+        return productService.findAll(null, null);
     }
 
     @ApiOperation(value = "Получить список продуктов по заданной категории.", response = String.class)
     @RequestMapping(value = "/prodByCategory/{cat}", method = RequestMethod.GET)
     public List<Product> getProductsByCategory(@PathVariable int cat) {
-        return productService.findAll(cat);
+        return productService.findAll(cat, null);
     }
 
     @ApiOperation(value = "Получить список продуктов в зависимости от наличия", response = String.class)

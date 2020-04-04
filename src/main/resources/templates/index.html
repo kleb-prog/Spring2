@@ -94,7 +94,7 @@
                 </tbody>
             </table>
             <hr>
-            Категория продуктов:
+            Категория продуктов и наличие:
             <form th:action="@{/}" method="get">
                 <select name="category">
                     <option th:text="'Не выбрано'" th:value="null"/>
@@ -103,10 +103,6 @@
                             th:text="${category.name}"
                     />
                 </select>
-                <button type="submit">применить</button>
-            </form>
-            Наличие:
-            <form th:action="@{/available}" method="get">
                 <select name="available">
                     <option th:text="'Не выбрано'" th:value="null"/>
                     <option th:value="true">Есть в наличии</option>

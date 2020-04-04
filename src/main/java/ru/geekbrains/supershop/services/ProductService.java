@@ -39,7 +39,7 @@ public class ProductService {
         );
     }
 
-    public List<Product> findAll(Integer category) {
+    public List<Product> findAll(Integer category, String available) {
 //        return category == null ? productRepository.findAll() : productRepository.findAllByCategory(ProductCategory.values()[category]);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -51,6 +51,13 @@ public class ProductService {
         List<Predicate> predicates = new ArrayList<>();
         if (category != null) {
             predicates.add(criteriaBuilder.equal(root.get("category"), category));
+        }
+
+        if (available != null && !available.isEmpty()) {
+            predicates.add(criteriaBuilder.equal(root.get("available"), Boolean.valueOf(available)));
+        }
+
+        if (!predicates.isEmpty()) {
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[]{})));
             return entityManager.createQuery(criteriaQuery).getResultList();
         } else {

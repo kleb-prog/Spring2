@@ -39,9 +39,9 @@ public class ShopController {
     private final ReviewService reviewService;
 
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
-    public String index(Model model, @RequestParam(required = false) Integer category) {
+    public String index(Model model, @RequestParam(required = false) Integer category, @RequestParam(required = false) String available) {
 		model.addAttribute("cart", cart.getCartRecords());
-        model.addAttribute("products", productService.findAll(category));
+        model.addAttribute("products", productService.findAll(category, available));
         return "index";
     }
 
@@ -62,7 +62,7 @@ public class ShopController {
             System.out.println(data);
         }
 
-        model.addAttribute("products", productService.findAll(null));
+        model.addAttribute("products", productService.findAll(null, null));
 
         return "admin";
     }
