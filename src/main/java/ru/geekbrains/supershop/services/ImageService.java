@@ -107,12 +107,16 @@ public class ImageService {
         Path targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         while (Files.exists(targetLocation)) {
             String extension = imageName.split("\\.")[1];
-            imageName = UUID.randomUUID() + "." + image.getContentType();
+            imageName = UUID.randomUUID() + "." + extension;
             targetLocation = IMAGES_STORE_PATH.resolve(imageName);
         }
         Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         log.info("File {} has been successfully uploaded!", imageName);
-        return imageRepository.save(new Image(product, imageName));
+        return imageRepository.save(new Image(product.getImage(), product, imageName));
+    }
+
+    public List<Image> getImagesByProduct(UUID imageProd) {
+        return imageRepository.findAllByIdImage(imageProd);
     }
 
 }

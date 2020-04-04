@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import ru.geekbrains.supershop.persistence.entities.Image;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ImageRepository extends JpaRepository<Image, UUID> {
@@ -14,4 +15,6 @@ public interface ImageRepository extends JpaRepository<Image, UUID> {
     String obtainImageNameByProductId(@Param("id") UUID id);
 
     Image findOneByName(String imageName);
+
+    List<Image> findAllByIdImage(UUID idImage);
 }

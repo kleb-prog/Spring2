@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import ru.geekbrains.paymentservice.Payment;
 import ru.geekbrains.supershop.beans.Cart;
+import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.persistence.entities.Review;
 import ru.geekbrains.supershop.persistence.entities.Shopuser;
+import ru.geekbrains.supershop.services.ImageService;
 import ru.geekbrains.supershop.services.ProductService;
 import ru.geekbrains.supershop.services.ReviewService;
 import ru.geekbrains.supershop.services.ShopuserService;
@@ -37,11 +39,16 @@ public class ShopController {
     private final ShopuserService shopuserService;
     private final CaptchaGenerator captchaGenerator;
     private final ReviewService reviewService;
+    private final ImageService imageService;
 
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index(Model model, @RequestParam(required = false) Integer category, @RequestParam(required = false) String available) {
-		model.addAttribute("cart", cart.getCartRecords());
-        model.addAttribute("products", productService.findAll(category, available));
+        model.addAttribute("cart", cart.getCartRecords());
+        List<Product> products = productService.findAll(category, available);
+        for (Product prod : products) {
+            prod.setImages(imageService.getImagesByProduct(prod.getImage()));
+        }
+        model.addAttribute("products", products);
         return "index";
     }
 
@@ -50,8 +57,8 @@ public class ShopController {
         model.addAttribute("products", productService.findByAvailability(available));
         return "index";
     }
-	
-	@GetMapping("/admin")
+
+    @GetMapping("/admin")
     public String adminPage(Model model, @CookieValue(value = "data", required = false) String data, Principal principal) {
 
         if (principal == null) {
@@ -82,9 +89,10 @@ public class ShopController {
 
         return "profile";
     }
-	
-	@GetMapping(value = "/captcha", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] captcha(HttpSession session) {
+
+    @GetMapping(value = "/captcha", produces = MediaType.IMAGE_PNG_VALUE)
+    public @ResponseBody
+    byte[] captcha(HttpSession session) {
         try {
             BufferedImage img = captchaGenerator.getCaptchaImage();
             session.setAttribute("captchaCode", captchaGenerator.getCaptchaString());
