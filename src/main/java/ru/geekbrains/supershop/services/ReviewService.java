@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.geekbrains.supershop.exceptions.ProductNotFoundException;
 import ru.geekbrains.supershop.persistence.entities.Product;
 import ru.geekbrains.supershop.persistence.entities.Review;
 import ru.geekbrains.supershop.persistence.entities.Shopuser;
@@ -39,6 +40,10 @@ public class ReviewService {
         return reviewRepository.getOne(id);
     }
 
+    public Optional<Review> findById(UUID id) {
+        return reviewRepository.findById(id);
+    }
+
     @Transactional
     public void save(Review review) {
         reviewRepository.save(review);
@@ -59,6 +64,23 @@ public class ReviewService {
 
         List<Review> reviews = entityManager.createQuery(criteriaQuery).getResultList();
         return reviews;
+    }
+
+    public UUID moderate(UUID id, String option) throws ProductNotFoundException {
+        Review review = reviewRepository.findById(id).orElseThrow(
+                () -> new ProductNotFoundException("Oops! Review " + id + " wasn't found!")
+        );
+        review.setApproved(option.equals("approve"));
+        save(review);
+        return review.getProduct().getId();
+    }
+
+    public List<Review> getAll() {
+        return reviewRepository.findAll();
+    }
+
+    public void removeAll() {
+        reviewRepository.deleteAll();
     }
 
 }

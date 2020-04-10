@@ -10,10 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,9 +22,9 @@ import java.io.IOException;
 
 import java.util.List;
 
+@Ignore
 @DataJpaTest
 @RunWith(SpringRunner.class)
-@Ignore
 public class ProductRepositoryTest {
 
     @Autowired

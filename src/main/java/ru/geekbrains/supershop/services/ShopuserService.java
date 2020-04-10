@@ -49,4 +49,8 @@ public class ShopuserService implements UserDetailsService {
         return shopuserRepository.existsByPhone(phone);
     }
 
+    public void save(Shopuser shopuser) {
+        shopuserRepository.save(shopuser);
+    }
+
 }

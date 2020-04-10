@@ -1,8 +1,6 @@
 package ru.geekbrains.supershop.persistence.entities;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import ru.geekbrains.supershop.persistence.entities.enums.Role;
 import ru.geekbrains.supershop.persistence.entities.utils.PersistableEntity;
@@ -14,6 +12,8 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "shopuser")
 @EqualsAndHashCode(callSuper = true)
 public class Shopuser extends PersistableEntity {
