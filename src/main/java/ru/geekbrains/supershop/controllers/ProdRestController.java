@@ -3,11 +3,9 @@ package ru.geekbrains.supershop.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.supershop.persistence.entities.Product;
+import ru.geekbrains.supershop.persistence.pojo.ProductPojo;
 import ru.geekbrains.supershop.services.ProductService;
 
 import java.util.List;
@@ -36,5 +34,10 @@ public class ProdRestController {
     @RequestMapping(value = "/prodByAvailability/{avail}", method = RequestMethod.GET)
     public List<Product> getProductsByAvailability(@PathVariable boolean avail) {
         return productService.findByAvailability(avail);
+    }
+
+    @RequestMapping(value = "/addProd", method = RequestMethod.POST)
+    public void addProduct(@RequestBody ProductPojo productPojo) {
+        productService.save(productPojo, null);
     }
 }
