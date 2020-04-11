@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      lang="EN">
     <head>
         <meta charset="utf-8"/>
         <title>SuperShop</title>
@@ -10,6 +11,81 @@
     <body>
         <div class="container">
             <h1>Product [[ ${product.title} ]]</h1>
+        </div>
+
+        <hr>
+        <h2 style="text-align: center"> Отзывы о продукте</h2>
+        <div class="container">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Текст отзыва</th>
+                    <th>Картинка</th>
+                    <th>Пользователь</th>
+					<th>
+						<div sec:authorize="hasRole('ADMIN')"> Проверка </div>
+					</th>
+                </tr>
+                </thead>
+                <tbody th:if="${reviews.size() > 0}">
+                <tr th:each="review, iterator : ${reviews}">
+                    <!--/*@thymesVar id="review" type="ru.geekbrains.supershop.persistence.entities.Review"*/-->
+                    <td th:text="${iterator.index + 1}"></td>
+                    <td th:switch="${review.approved}">
+                        <div th:case="true"> [[ ${review.commentary} ]] </div>
+                        <div th:case="false">
+                            <div sec:authorize="hasRole('ADMIN')"> [[ ${review.commentary} ]] </div>
+                            <div sec:authorize="hasRole('CUSTOMER')"> Комментарий проверяется модератором </div>
+                            <div sec:authorize="isAnonymous()"> Комментарий проверяется модератором </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <img th:src="@{'/products/revImages/' + ${review.id}}" alt="" width="50px" height="50px" />
+                        </div>
+                    </td>
+                    <td>
+                        <a th:href="@{'/products/' + ${review.shopuser.id}}">[[ ${review.shopuser.firstName} ]]</a>
+                    </td>
+					<td>
+						<div sec:authorize="hasRole('ADMIN')">
+                            <div th:switch="${review.approved}">
+                                <p class="alert alert-success" th:case="true"> Одобрен </p>
+                                <p class="alert alert-danger" th:case="false">
+                                    <a th:href="@{'/products/approve/' + ${review.id}}"> Одобрить </a>
+                                </p>
+                            </div>
+                        </div>
+					</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="container" style="text-align: center" sec:authorize="isAuthenticated()">
+            <form action="#" th:action="@{/products/reviews}" method="POST" enctype="multipart/form-data">
+                <div class="form-row row justify-content-center">
+                    <div class="form-group col-md-9">
+                        <textarea class="form-control" name="commentary" rows="5" style="resize: none;" placeholder="Введите ваш отзыв"></textarea>
+                    </div>
+                </div>
+                <div class="form-row row justify-content-center">
+                    <div class="form-group col-md-3">
+                        <input type="text" name="captchaCode" class="form-control" placeholder="Введите проверочный код">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <img class="captcha-pic" id="captcha" th:src="@{/captcha}" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <input type="file" class="form-control" name="image"/>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <button type="submit" class="btn btn-success">оставить отзыв</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </body>
 </html>
