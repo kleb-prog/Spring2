@@ -22,7 +22,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: klebedevspb@gmail.com
-    password: uplrsarpfivtpfhl
+    password: myPassword
     protocol: smtp
     tls: true
     properties.mail.smtp:
