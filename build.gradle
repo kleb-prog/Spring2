@@ -2,7 +2,14 @@ plugins {
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
+	id 'no.nils.wsdl2java' version '0.10'
+	id "com.google.cloud.tools.jib" version "1.8.0"
 }
+
+apply plugin: 'com.google.cloud.tools.jib'
+apply plugin: 'no.nils.wsdl2java'
+
+apply from: 'gradle/jib.gradle'
 
 configurations {
 	compile.exclude module: "spring-boot-starter-tomcat"
@@ -15,28 +22,52 @@ repositories {
 	mavenCentral()
 }
 
+def swaggerVersion = '2.8.0'
+
 dependencies {
 
-	compile 'org.springframework.boot:spring-boot-starter-undertow'
-
+	compileOnly 'org.flywaydb:flyway-core'
 	compileOnly 'org.springframework.boot:spring-boot-devtools'
 
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.5.RELEASE'
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-undertow'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
+
 	runtimeOnly 'org.postgresql:postgresql'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-
 	testImplementation 'com.h2database:h2:1.4.197'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation "io.springfox:springfox-bean-validators:${swaggerVersion}"
+	implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+	implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+
+	implementation "org.springframework.boot:spring-boot-starter-amqp"
 
 }
+
+wsdl2javaExt {
+	cxfVersion = "3.1.10"
+}
+
+wsdl2java{
+	generatedWsdlDir = file("${projectDir}/src/main/script_generated")
+	wsdlDir=file("${projectDir}/src/main/resources/META-INF/wsdl/")
+	wsdlsToGenerate = [
+			[ file("${projectDir}/src/main/resources/META-INF/wsdl/payment/WsPayment.wsdl") ]
+	]
+}
+
+compileJava.dependsOn wsdl2java
 
 test {
 	useJUnitPlatform()
