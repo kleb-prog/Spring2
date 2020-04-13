@@ -11,13 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import ru.geekbrains.paymentservice.Payment;
 import ru.geekbrains.supershop.beans.Cart;
-import ru.geekbrains.supershop.persistence.entities.Product;
-import ru.geekbrains.supershop.persistence.entities.Review;
-import ru.geekbrains.supershop.persistence.entities.Shopuser;
-import ru.geekbrains.supershop.services.ImageService;
-import ru.geekbrains.supershop.services.ProductService;
-import ru.geekbrains.supershop.services.ReviewService;
-import ru.geekbrains.supershop.services.ShopuserService;
+import ru.geekbrains.supershop.persistence.entities.*;
+import ru.geekbrains.supershop.services.*;
 import ru.geekbrains.supershop.utilities.Validators;
 import ru.geekbrains.supershop.utils.CaptchaGenerator;
 
@@ -27,8 +22,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,6 +35,8 @@ public class ShopController {
     private final CaptchaGenerator captchaGenerator;
     private final ReviewService reviewService;
     private final ImageService imageService;
+    private final PurchaseService purchaseService;
+    private final EmailSenderService emailSenderService;
 
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String index(Model model, @RequestParam(required = false) Integer category, @RequestParam(required = false) String available) {
@@ -122,5 +119,32 @@ public class ShopController {
     @GetMapping(value = "/revByPhone/{phone}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Review>> getReviewsByPhone(@PathVariable String phone) {
         return new ResponseEntity<>(reviewService.getReviewsByPhone(phone), HttpStatus.OK);
+    }
+
+    @PostMapping("/purchase")
+    public String finishOrderAndPay(String phone, String email, Principal principal, Model model) {
+
+        Shopuser shopuser = shopuserService.findByPhone(principal.getName());
+
+        Purchase purchase = Purchase.builder()
+                .shopuser(shopuser)
+                .products(cart.getCartRecords()
+                        .stream()
+                        .map(CartRecord::getProduct)
+                        .collect(Collectors.toList())
+                )
+                .price(cart.getPrice() + cart.getPayment().getFee())
+                .phone(phone)
+                .email(email)
+                .build();
+
+        model.addAttribute("purchase", purchaseService.makePurchase(purchase));
+
+        cart.clear();
+
+        emailSenderService.sendMail(email, purchase);
+
+        return "orderdone";
+
     }
 }

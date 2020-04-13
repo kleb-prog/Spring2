@@ -2,6 +2,7 @@ package ru.geekbrains.supershop.controllers;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import ru.geekbrains.supershop.persistence.entities.Shopuser;
 import ru.geekbrains.supershop.persistence.entities.enums.ProductCategory;
 import ru.geekbrains.supershop.persistence.entities.enums.Role;
 import ru.geekbrains.supershop.persistence.pojo.ProductPojo;
+import ru.geekbrains.supershop.services.EmailSenderService;
 import ru.geekbrains.supershop.services.ProductService;
 import ru.geekbrains.supershop.services.ReviewService;
 import ru.geekbrains.supershop.services.ShopuserService;
@@ -33,6 +35,9 @@ public class ReviewServiceTest {
 
     @Autowired
     private ShopuserService shopuserService;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     private Product product;
 

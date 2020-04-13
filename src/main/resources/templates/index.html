@@ -14,38 +14,9 @@
             </div>
 			
 			<hr>
-
-            <div class="container" sec:authorize="isAuthenticated()">
-                <div class="row">
-                    <div class="col-sm">
-                        <a class="nav-link" th:href="@{/profile}" th:text="Profile">PROFILE</a>
-                    </div>
-                    <div class="col-sm">
-                        <form th:action="@{/logout}" method="POST" class="form-inline">
-                            <button id="navLogout" class="btn btn-outline-secondary" type="submit"  th:text="logout"></button>
-                        </form>
-                    </div>
-                    <div class="col-sm">
-                        <a class="nav-link" th:href="@{/cart}" th:text="CART + '(' + ${cart.size() + ')'}">CART</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container" sec:authorize="isAnonymous()">
-                <form th:action="@{/authenticateTheUser}" method="POST" class="form-inline">
-                    <div class="row" style="margin-left: auto;margin-right: auto;">
-                        <div class="col-sm">
-                            <input type="text" name="username" placeholder="username" class="form-control">
-                        </div>
-                        <div class="col-sm">
-                            <input type="password" name="password" placeholder="password" class="form-control">
-                        </div>
-                        <div class="col-sm">
-                            <button type="submit" class="btn btn-success">вход</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+			
+			<br>
+            <div th:replace="~{navigation :: navigation(Home)}" />            
             <br>
             <table class="table table-hover">
                 <thead class="thead-dark">

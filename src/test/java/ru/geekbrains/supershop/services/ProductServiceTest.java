@@ -1,6 +1,7 @@
 package ru.geekbrains.supershop.services;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,6 +21,9 @@ public class ProductServiceTest {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Before
     public void setUp() {

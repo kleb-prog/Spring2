@@ -10,6 +10,10 @@
         <div class="container">
 
             <h1>Корзина</h1>
+			
+			<br>
+            <div th:replace="~{navigation :: navigation(Home)}" />
+            <br>
 
             <div th:if="${cart.cartRecords.size() > 0}">
                 <table class="table table-hover">
